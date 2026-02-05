@@ -40,7 +40,7 @@ def chat(user_message):
     # Step 2: Send ENTIRE array to AI
     # Every single previous message gets sent every time!
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=messages,
         max_tokens=500
     )

@@ -52,7 +52,7 @@ print("Testing API connection...", end=" ")
 try:
     client = Groq(api_key=api_key)
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": "Say 'hello' and nothing else."}],
         max_tokens=10
     )

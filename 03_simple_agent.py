@@ -207,7 +207,7 @@ def run_agent(user_task):
 
         # Send messages + tool definitions to the LLM
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages,
             tools=TOOL_DEFINITIONS,
             tool_choice="auto",  # LLM decides whether to use a tool
@@ -219,9 +219,10 @@ def run_agent(user_task):
         # Does the LLM want to call a tool?
         if assistant_message.tool_calls:
             # Add the assistant's message (with tool call info) to history
+            # Note: content can be None when tool calls are present
             messages.append({
                 "role": "assistant",
-                "content": assistant_message.content,
+                "content": assistant_message.content or "",
                 "tool_calls": [
                     {
                         "id": tc.id,
@@ -239,6 +240,10 @@ def run_agent(user_task):
             for tool_call in assistant_message.tool_calls:
                 tool_name = tool_call.function.name
                 tool_args = json.loads(tool_call.function.arguments)
+
+                # Handle None/null arguments (convert to empty dict)
+                if tool_args is None:
+                    tool_args = {}
 
                 print(f"  🔧 Tool: {tool_name}")
                 print(f"     Args: {json.dumps(tool_args)[:100]}")

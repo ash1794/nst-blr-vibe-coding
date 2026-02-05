@@ -188,7 +188,7 @@ def run_agent(user_task, system_prompt=None, max_iterations=10):
         print(f"--- Iteration {iteration} ---")
 
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages,
             tools=TOOL_DEFINITIONS,
             tool_choice="auto",
@@ -198,9 +198,10 @@ def run_agent(user_task, system_prompt=None, max_iterations=10):
         assistant_message = response.choices[0].message
 
         if assistant_message.tool_calls:
+            # Note: content can be None when tool calls are present
             messages.append({
                 "role": "assistant",
-                "content": assistant_message.content,
+                "content": assistant_message.content or "",
                 "tool_calls": [
                     {
                         "id": tc.id,
@@ -217,6 +218,10 @@ def run_agent(user_task, system_prompt=None, max_iterations=10):
             for tool_call in assistant_message.tool_calls:
                 tool_name = tool_call.function.name
                 tool_args = json.loads(tool_call.function.arguments)
+
+                # Handle None/null arguments (convert to empty dict)
+                if tool_args is None:
+                    tool_args = {}
 
                 print(f"  🔧 Tool: {tool_name}")
                 print(f"     Args: {json.dumps(tool_args)[:100]}")
