@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+test_files/
+!challenges/test_files/
+my_calculator/
+contacts/
+*.json
